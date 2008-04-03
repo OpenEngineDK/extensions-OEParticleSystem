@@ -51,7 +51,7 @@ public:
         //Vector<4,float> color(1,1,1, 1 - alphaHeight);
         Vector<4,float> color(1,0.5,0.0, 1 - alphaHeight);
 
-        ITextureResourcePtr texture = ResourceManager::CreateTexture(picture);
+        ITextureResourcePtr texture = ResourceManager<ITextureResource>::Create(picture);
         TextureLoader::LoadTextureResource(texture);
 
 
