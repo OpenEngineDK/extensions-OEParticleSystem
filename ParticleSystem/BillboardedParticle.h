@@ -86,7 +86,8 @@ public:
         rightside->texc[0] = Vector<2,float>(1,0);
         faces->Add(rightside);
         
-        leftside->texr = rightside->texr = texture;
+        MaterialPtr m = leftside->mat = rightside->mat = MaterialPtr(new Material());
+	m->texr = texture;
         
         gnode->SetFaceSet(faces);
         tnode->Rotate(direction[0],direction[1],direction[2]);
