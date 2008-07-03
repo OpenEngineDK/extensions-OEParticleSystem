@@ -1,8 +1,8 @@
-ADD_LIBRARY(Extensions_ParticleSystem
+ADD_LIBRARY(Extensions_OEParticleSystem
   ParticleSystem/ParticleSystem.cpp
 )
 
-TARGET_LINK_LIBRARIES (Extensions_ParticleSystem
+TARGET_LINK_LIBRARIES (Extensions_OEParticleSystem
 		       OpenEngine_Core
 		       OpenEngine_Display
 		       OpenEngine_Resources
