@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <Core/IModule.h>
-#include "IParticleSet.h"
+#include "IParticleGroup.h"
 
 namespace OpenEngine {
 namespace ParticleSystem {
@@ -13,12 +13,12 @@ using std::vector;
 
 class ParticleSystem : public IModule {
 private:
-    vector<IParticleSet*> particleSets;
+    vector<IParticleGroup*> particleGroups;
 public:
     ParticleSystem();
     ~ParticleSystem();
 
-    void AddParticleSet(IParticleSet* particleSet);
+    void AddParticleGroup(IParticleGroup* particleGroup);
 
     virtual void Initialize();
     virtual void Process(const float deltaTime, const float percent);

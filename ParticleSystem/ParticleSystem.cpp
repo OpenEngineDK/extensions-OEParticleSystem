@@ -10,26 +10,25 @@ ParticleSystem::~ParticleSystem() {
 
 }
 
-void ParticleSystem::AddParticleSet(IParticleSet* particleSet) {
-    particleSets.push_back(particleSet);
+void ParticleSystem::AddParticleGroup(IParticleGroup* particleGroup) {
+    particleGroups.push_back(particleGroup);
 }
 
 
 void ParticleSystem::Process(const float deltaTime, const float percent) {
-    vector<IParticleSet*>::iterator itr;
-    for (itr = particleSets.begin(); itr != particleSets.end(); itr++) {
-        IParticleSet* particleSet = *itr;
-        particleSet->Process(deltaTime,percent);
+    vector<IParticleGroup*>::iterator itr;
+    for (itr = particleGroups.begin(); itr != particleGroups.end(); itr++) {
+        IParticleGroup* particleGroup = *itr;
+        particleGroup->Process(deltaTime,percent);
     }
 }
 
 void ParticleSystem::Initialize() {
-
 }
 
 void ParticleSystem::Deinitialize() {
     // @todo remember to delete the objects in the list
-    particleSets.clear();
+    particleGroups.clear();
 }
 
 bool ParticleSystem::IsTypeOf(const std::type_info& inf) {

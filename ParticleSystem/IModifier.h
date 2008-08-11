@@ -4,12 +4,13 @@
 namespace OpenEngine {
 namespace ParticleSystem {
 
-template <class T> class ParticleSet; // forward decleration
+// forward declaration
+template <class T> class ParticleGroup;
 
-template <class T>
-class IModifier {
+template <class T> class IModifier {
 public:
-    virtual void Process(float deltaTime, float percent, ParticleSet<T>* particleSet) = 0;
+    virtual void Process(float deltaTime, float percent, 
+			 ParticleGroup<T>* particleGroup) = 0;
     virtual ~IModifier() {}
 };
 

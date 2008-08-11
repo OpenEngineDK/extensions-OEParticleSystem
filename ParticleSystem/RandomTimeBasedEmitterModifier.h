@@ -2,7 +2,7 @@
 #define _RANDOM_BASED_EMITTER_MODIFIER_H_
 
 #include "IModifier.h"
-#include "ParticleSet.h"
+#include "ParticleGroup.h"
 #include <Core/Exceptions.h>
 #include "IEmitter.h"
 
@@ -25,11 +25,11 @@ public:
         this->emitter = emitter;
     }
 
-    void Process(float deltaTime, float percent, ParticleSet<T>* particleSet) {
+    void Process(float deltaTime, float percent, ParticleGroup<T>* particleGroup) {
         timeElapsed += deltaTime;
 
         while (timeElapsed > activationTime &&
-            particleSet->GetNumberOfActiveParticles() < particleSet->GetNumberOfParticles()) {
+            particleGroup->GetNumberOfActiveParticles() < particleGroup->GetNumberOfParticles()) {
             timeElapsed -= activationTime;
 
             if (percentChanceOfSpawning < 1) {
@@ -37,16 +37,21 @@ public:
                 if (percentChanceOfSpawning < change) return;
             }
 
-            particleSet->GetParticles()[particleSet->GetNumberOfActiveParticles()].position = emitter->GetParticlePosition();
-            particleSet->GetParticles()[particleSet->GetNumberOfActiveParticles()].direction = Vector<3,float>(0,0,(rand()/((float)RAND_MAX)-0.5)*0.025*3.14);
+            particleGroup->GetParticles()[particleGroup->GetNumberOfActiveParticles()].position = 
+	      emitter->GetParticlePosition();
+            particleGroup->GetParticles()[particleGroup->GetNumberOfActiveParticles()].orientation = 
+	      Vector<3,float>(0,0,(rand()/((float)RAND_MAX)-0.5)*0.025*3.14);
 
+	    /*
             float rd = (rand()/(float)RAND_MAX);
             string pic = "";
             if( rd < 0.3333) pic = "Smoke/smoke01.tga";
             else if (rd > 0.6666) pic = "Smoke/smoke03.tga";
             else pic = "Smoke/smoke02.tga";
-            particleSet->GetParticles()[particleSet->GetNumberOfActiveParticles()].picture = pic;
-            particleSet->ActivateParticle(particleSet->GetNumberOfActiveParticles());
+            particleGroup->GetParticles()[particleGroup->GetNumberOfActiveParticles()].picture = pic;
+*/
+
+            particleGroup->ActivateParticle(particleGroup->GetNumberOfActiveParticles());
         }
     }
 };
