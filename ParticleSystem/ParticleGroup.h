@@ -16,14 +16,14 @@ using std::list;
 template <class T>
 class ParticleGroup : public IParticleGroup {
 private:
-    unsigned int numberOfParticles, numberActiveOfParticles;
+    unsigned int numberOfParticles, numberOfActiveParticles;
     T* particles; //static allocated array
     list<IModifier<T>*> modifiers;
 
 public:
     ParticleGroup(unsigned int numberOfParticles) {
         this->numberOfParticles = numberOfParticles;
-        numberActiveOfParticles = 0;
+        numberOfActiveParticles = 0;
         particles = new T[numberOfParticles];
     }
 
@@ -47,7 +47,7 @@ public:
     }
 
     unsigned int GetNumberOfActiveParticles() {
-        return numberActiveOfParticles;
+        return numberOfActiveParticles;
     }
 
     T* GetParticles() {
@@ -57,36 +57,25 @@ public:
     void AddModifier(IModifier<T>* modifier) {
         modifiers.push_back(modifier);
     }
-/*
-    void CreateParticle(float creationTime, Vector<3,float> position) {
-        particles[numberActiveOfParticles].position = position;
-        numberActiveOfParticles += 1;
-    }
-*/
-    void ActivateParticle(unsigned int index) {
-        if (index > numberOfParticles) return; // max number of active particles reached
-        if (index < numberActiveOfParticles)
-            return; // particle is already active
-        else if (index == numberActiveOfParticles)
-            numberActiveOfParticles += 1; // this is the first deactive particle so activate it
-        else { // particle is not the first deactive, so swap them
-            T p = particles[numberActiveOfParticles];
-            particles[numberActiveOfParticles] = particles[index];
-            particles[index] = p;
-            numberActiveOfParticles += 1;
-        }
+
+    unsigned int ActivateNextParticle() {
+      numberOfActiveParticles++;
+      return numberOfActiveParticles-1;
     }
 
     void DeactivateParticle(unsigned int index) {
-        if (index > numberActiveOfParticles)
+        if (index >= numberOfParticles)
+	    throw Exception("index out of bound");
+
+        if (index > numberOfActiveParticles)
             return; // pariticle already deactive
-        else if (index == numberActiveOfParticles)
-            numberActiveOfParticles -= 1;
+        else if (index == numberOfActiveParticles)
+            numberOfActiveParticles -= 1;
         else {
-            T p = particles[numberActiveOfParticles-1];
-            particles[numberActiveOfParticles-1] = particles[index];
+            T p = particles[numberOfActiveParticles-1];
+            particles[numberOfActiveParticles-1] = particles[index];
             particles[index] = p;
-            numberActiveOfParticles -= 1;
+            numberOfActiveParticles -= 1;
         }
     }
 };

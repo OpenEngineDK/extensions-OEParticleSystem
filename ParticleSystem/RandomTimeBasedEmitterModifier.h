@@ -50,8 +50,7 @@ public:
             else pic = "Smoke/smoke02.tga";
             particleGroup->GetParticles()[particleGroup->GetNumberOfActiveParticles()].picture = pic;
 */
-
-            particleGroup->ActivateParticle(particleGroup->GetNumberOfActiveParticles());
+            unsigned int particleIndex = particleGroup->ActivateNextParticle();
         }
     }
 };
