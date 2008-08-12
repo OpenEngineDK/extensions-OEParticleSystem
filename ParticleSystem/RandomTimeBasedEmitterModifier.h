@@ -38,9 +38,9 @@ public:
             }
 
             particleGroup->GetParticles()[particleGroup->GetNumberOfActiveParticles()].position = 
-	      emitter->GetParticlePosition();
+                emitter->GetParticlePosition();
             particleGroup->GetParticles()[particleGroup->GetNumberOfActiveParticles()].orientation = 
-	      Vector<3,float>(0,0,(rand()/((float)RAND_MAX)-0.5)*0.025*3.14);
+                Vector<3,float>(0,0,(rand()/((float)RAND_MAX)-0.5)*0.025*3.14);
 
 	    /*
             float rd = (rand()/(float)RAND_MAX);
