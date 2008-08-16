@@ -1,26 +1,21 @@
 #ifndef _LIFESPAN_MODIFIER_H_
 #define _LIFESPAN_MODIFIER_H_
 
-#include "IModifier.h"
-#include "ParticleGroup.h"
+#include <ParticleSystem/ParticleCollection.h>
 
 namespace OpenEngine {
 namespace ParticleSystem {
 
-template <class T> class LifespanModifier : public IModifier<T> {
+template <class T> class LifespanModifier {
 private:
 public:
     LifespanModifier() { }
 
-    void Process(float deltaTime, float percent,
-		 ParticleGroup<T>* particleGroup) {
-      T* particles = particleGroup->GetParticles();
-      for (unsigned int i=0; i<particleGroup->GetNumberOfActiveParticles(); i++) {
-          particles[i].lifespan -= deltaTime;
-          if (particles[i].lifespan <= 0) 
-              particleGroup->DeactivateParticle(i);
-      }
-      
+    inline void Process(float deltaTime, ParticleIterator<T>& iterator) {
+        T& particle = iterator.Element();
+        particle.lifespan -= deltaTime;
+        if (particle.lifespan <= 0) 
+            iterator.Delete();
     }
 };
 

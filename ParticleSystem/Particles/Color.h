@@ -8,7 +8,7 @@ using namespace OpenEngine::Math;
 namespace OpenEngine {
 namespace ParticleSystem {
     template <class T> struct Color : T {
-        Vector<4,float> color;
+        Vector<4,float> color, startColor, endColor;
     };
 }
 }

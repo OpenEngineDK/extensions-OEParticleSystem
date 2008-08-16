@@ -1,10 +1,10 @@
 #ifndef _RANDOM_BASED_EMITTER_MODIFIER_H_
 #define _RANDOM_BASED_EMITTER_MODIFIER_H_
 
-#include "IModifier.h"
-#include "ParticleGroup.h"
+#include <ParticleSystem/IModifier.h>
+#include <ParticleSystem/ParticleGroup.h>
 #include <Core/Exceptions.h>
-#include "IEmitter.h"
+#include <ParticleSystem/Emitter.h>
 
 namespace OpenEngine {
 namespace ParticleSystem {
@@ -14,11 +14,11 @@ using OpenEngine::Core::Exception;
 template <class T>
 class RandomTimeBasedEmitterModifier : public IModifier<T> {
 private:
-    IEmitter* emitter;
+    Emitter<T>* emitter;
     unsigned int ration;
     float timeElapsed, activationTime, percentChanceOfSpawning;
 public:
-    RandomTimeBasedEmitterModifier(float activationTime, unsigned percentChanceOfSpawning, IEmitter* emitter) : timeElapsed(0.0f) {
+    RandomTimeBasedEmitterModifier(float activationTime, unsigned percentChanceOfSpawning, Emitter<T>* emitter) : timeElapsed(0.0f) {
         //if (ration==0) throw Exception("ration initialized to zero");
         this->activationTime = activationTime;
         this->percentChanceOfSpawning = percentChanceOfSpawning/100.0;
@@ -37,11 +37,12 @@ public:
                 if (percentChanceOfSpawning < change) return;
             }
 
-            particleGroup->GetParticles()[particleGroup->GetNumberOfActiveParticles()].position = 
-                emitter->GetParticlePosition();
-            particleGroup->GetParticles()[particleGroup->GetNumberOfActiveParticles()].orientation = 
-                Vector<3,float>(0,0,(rand()/((float)RAND_MAX)-0.5)*0.025*3.14);
+/*             particleGroup->GetParticles()[particleGroup->GetNumberOfActiveParticles()].position =  */
+/*                 emitter->GetParticlePosition(); */
+/*             particleGroup->GetParticles()[particleGroup->GetNumberOfActiveParticles()].orientation =  */
+/*                 Vector<3,float>(0,0,(rand()/((float)RAND_MAX)-0.5)*0.025*3.14); */
 
+            emitter->Emit(particleGroup);
 	    /*
             float rd = (rand()/(float)RAND_MAX);
             string pic = "";
@@ -50,7 +51,7 @@ public:
             else pic = "Smoke/smoke02.tga";
             particleGroup->GetParticles()[particleGroup->GetNumberOfActiveParticles()].picture = pic;
 */
-            unsigned int particleIndex = particleGroup->ActivateNextParticle();
+            //unsigned int particleIndex = particleGroup->ActivateNextParticle();
         }
     }
 };
