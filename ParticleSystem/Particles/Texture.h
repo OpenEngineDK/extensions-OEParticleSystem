@@ -10,6 +10,7 @@ namespace ParticleSystem {
     template <class T> struct Texture : T {
         ITextureResourcePtr texture;
         float rotation;
+        float spin; // speed of the rotation
     };
 }
 }

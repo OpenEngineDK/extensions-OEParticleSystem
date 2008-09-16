@@ -13,8 +13,8 @@ public:
 
     inline void Process(float deltaTime, ParticleIterator<T>& iterator) {
         T& particle = iterator.Element();
-        particle.lifespan -= deltaTime;
-        if (particle.lifespan <= 0) 
+        particle.life += deltaTime;
+        if (particle.life >= particle.maxlife) 
             iterator.Delete();
     }
 };

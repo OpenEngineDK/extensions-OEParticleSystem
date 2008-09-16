@@ -7,18 +7,14 @@
 namespace OpenEngine {
 namespace ParticleSystem {
 
-template <class T> class SizeModifier { //: public IModifier<T> {
+template <class T> class SizeModifier { 
 private:
-    float timePassed;
+    float maxsizevar;
 public:
-    SizeModifier() { timePassed = 0.0; }
+    SizeModifier(float maxsizevar): maxsizevar(maxsizevar) { }
 
-    inline void Process(float deltaTime,T& particle) {
-        particle.size += 0.2;
-        float maxsize = 3;
-        if (particle.size > maxsize)
-            particle.size = maxsize;
-                
+    inline void Process(T& particle) {
+        particle.size = particle.startsize + maxsizevar * particle.life / particle.maxlife;
     }
 };
 

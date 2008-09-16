@@ -9,6 +9,7 @@ namespace OpenEngine {
 namespace ParticleSystem {
     template <class T> struct Size : T {
         float size;
+        float startsize;
     };
 }
 }

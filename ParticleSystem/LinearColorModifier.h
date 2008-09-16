@@ -11,14 +11,9 @@ private:
 public:
     LinearColorModifier() { }
 
-    void Process(float deltaTime, T& particle) {
-        //T& particle = iterator.Element();
-        if (particle.color == particle.endColor)
-            return;
-        Vector<4,float> dist = (particle.endColor - particle.startColor)*deltaTime/1000;
-        if (dist.GetLength() < 0.001) 
-            particle.color = particle.endColor;
-        else particle.color += dist;
+    inline void Process(T& particle) {
+        particle.color = (particle.startColor*(1-(particle.life / particle.maxlife))) + (particle.endColor *(particle.life / particle.maxlife));
+        //logger.info << "pcol: " << particle.color << logger.end;
     }
 };
 
