@@ -61,18 +61,9 @@ public:
     {
     }
 
-//     ParticleCollection(unsigned int size): particles(new T[size]),
-//                                            size(size), 
-//                                            dead(0),
-//                                            iterator(particles,&dead)
-                                           
-//     {
-    
-//     }
-
-    ~ParticleCollection() {
-        //delete[] particles;
-        // TODO: make particlesystem deallocate
+    virtual ~ParticleCollection() {
+        delete[] particles;
+        // @todo: make particlesystem deallocate
     }
 
     unsigned int GetSize() {
@@ -88,23 +79,6 @@ public:
             return particles[dead++];
         throw Exception("Reached allocation limit of "+Utils::Convert::ToString<int>(size));
     }
-
-//     void DeactivateParticle(ParticleIterator<T*> iterator) {
-//         unsigned int index = iterator.index;
-//         if (index >= size)
-// 	    throw Exception("index out of bound");
-//         if (index > activeParticles)
-//             return; // pariticle already deactive
-//         else if (index == activeParticles)
-//             activeParticles -= 1;
-//         else {
-//             T p = particles[activeParticles-1];
-//             particles[activeParticles-1] = particles[index];
-//             particles[index] = p;
-//             activeParticles -= 1;
-//         }
-//     }
-
 };
 
 } //NS ParticleSystem
