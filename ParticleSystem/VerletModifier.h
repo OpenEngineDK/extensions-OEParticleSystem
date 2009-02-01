@@ -12,7 +12,7 @@ public:
 
     void Process(float deltaTime, T& particle) {
         Vector<3,float> tmp = particle.position;
-        particle.position += (particle.position-particle.previousPosition)*0.99;
+        particle.position += (particle.position-particle.previousPosition)*0.98;
         particle.previousPosition = tmp;
     }
 };

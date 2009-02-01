@@ -11,11 +11,8 @@ private:
 public:
     LifespanModifier() { }
 
-    inline void Process(float deltaTime, ParticleIterator<T>& iterator) {
-        T& particle = iterator.Element();
+    inline void Process(float deltaTime, T& particle) {
         particle.life += deltaTime;
-        if (particle.life >= particle.maxlife) 
-            iterator.Delete();
     }
 };
 

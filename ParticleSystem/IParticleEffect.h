@@ -18,7 +18,10 @@ class IParticleEffect: public virtual IListener<ParticleEventArg> {
 public:
     virtual ~IParticleEffect() {}
 
-    virtual ISceneNode* GetSceneNode() = 0;
+    virtual ISceneNode* GetSceneNode()  = 0;
+    virtual void SetActive(bool active) = 0;
+    virtual bool GetActive()            = 0;
+    virtual void Reset()                = 0;
 };
 
 } //NS ParticleSystem
