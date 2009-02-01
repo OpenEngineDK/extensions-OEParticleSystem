@@ -12,6 +12,8 @@ private:
     float maxsizevar;
 public:
     SizeModifier(float maxsizevar): maxsizevar(maxsizevar) { }
+    float GetMaxSizeVar() { return maxsizevar; }
+    void SetMaxSizeVar(float size) { maxsizevar = size; }
 
     inline void Process(T& particle) {
         particle.size = particle.startsize + maxsizevar * particle.life / particle.maxlife;
