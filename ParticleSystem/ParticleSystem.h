@@ -5,7 +5,6 @@
 #include <Core/IModule.h>
 #include <Core/Event.h>
 #include <Core/IListener.h>
-#include <Utils/Timer.h>
 #include <Logging/Logger.h>
 
 namespace OpenEngine {
@@ -17,7 +16,6 @@ using OpenEngine::Core::InitializeEventArg;
 using OpenEngine::Core::ProcessEventArg;
 using OpenEngine::Core::DeinitializeEventArg;
 using OpenEngine::Core::IListener;
-using OpenEngine::Utils::Timer;
 
 class ParticleSystem;
 
@@ -62,17 +60,29 @@ public:
 };
 
 class ParticleSystemTimer : public IListener<ProcessEventArg> {
-    Timer timer;
+    unsigned int time;
+    const unsigned int interval;
     ParticleSystem& particleSystem;
 public:
-    ParticleSystemTimer(ParticleSystem& particleSystem) : particleSystem(particleSystem) {
-        timer.Start();
+    ParticleSystemTimer(ParticleSystem& particleSystem, const unsigned int interval) : 
+        time(0), 
+        interval(interval),
+        particleSystem(particleSystem) {
+    }
+    ParticleSystemTimer(ParticleSystem& particleSystem) : 
+        time(0), 
+        interval(30000),
+        particleSystem(particleSystem) {
     }
     virtual void Handle(ProcessEventArg arg) {
         // call the particle systems with fixed time intervals
-        unsigned int t = timer.GetElapsedIntervalsAndReset(50000);
+        time += arg.approx;
+
         //logger.info << "t is " << t << logger.end;
-        while (t--) particleSystem.Handle(arg);
+        while (time > 30000) {
+            particleSystem.Handle(arg);
+            time -= 30000;
+        }
     }
 };
 

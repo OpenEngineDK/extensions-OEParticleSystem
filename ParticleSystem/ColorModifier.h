@@ -28,7 +28,7 @@ public:
     ColorModifier() { }
     
     /* Make particle have color at certain time in the 
-     * particles life
+     * particles lifespan
      */
     void AddColor(float time, Vector<4,float> color) {
         TimeColorPair tc;// = new TimeColorPair();
