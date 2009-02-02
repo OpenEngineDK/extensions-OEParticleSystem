@@ -13,9 +13,11 @@ namespace ParticleSystem {
 using OpenEngine::Math::Vector;
 using namespace std;
 
-struct TimeColorPair {
+class TimeColorPair {
+public:
     float time;
     Vector<4,float> color;
+    TimeColorPair(): time(0) {} 
 };
 
 template <class T> class ColorModifier { 
