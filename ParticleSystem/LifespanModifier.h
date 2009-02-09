@@ -11,8 +11,8 @@ private:
 public:
     LifespanModifier() { }
 
-    inline void Process(float deltaTime, T& particle) {
-        particle.life += deltaTime;
+    inline void Process(float dt, T& particle) {
+        particle.life += dt;
     }
 };
 

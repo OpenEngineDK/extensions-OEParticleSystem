@@ -15,8 +15,8 @@ private:
 public:
     StaticForceModifier(Vector<3,float> force): force(force) {}
 
-    inline void Process( float deltaTime, T& particle) {
-        particle.position += force*deltaTime/1000;
+    inline void Process(float dt, T& particle) {
+        particle.forces += force;
     }
 };
 

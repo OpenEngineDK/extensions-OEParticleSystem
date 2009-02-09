@@ -24,7 +24,7 @@ struct ParticleEventArg {
     ParticleSystem& particleSystem;
     float dt;
 ParticleEventArg(ParticleSystem& particleSystem, float dt): 
-    particleSystem(particleSystem),dt(dt) {}
+    particleSystem(particleSystem), dt(dt) {}
 };
 
 class ParticleSystem : public IModule {
@@ -49,7 +49,9 @@ public:
     }
 
     void Handle(ProcessEventArg arg) {
-        ParticleEventArg parg(*this, 50000/1000);
+        ParticleEventArg parg(*this, (arg.approx/1000000.0));
+//         logger.info << "approx: " << arg.approx << logger.end;
+//         logger.info << "dt: " << parg.dt << logger.end;
         process.Notify(parg);
  
     }
@@ -79,9 +81,9 @@ public:
         time += arg.approx;
 
         //logger.info << "t is " << t << logger.end;
-        while (time > 30000) {
+        while (time > interval) {
             particleSystem.Handle(arg);
-            time -= 30000;
+            time -= interval;
         }
     }
 };

@@ -18,11 +18,13 @@ public:
     float time;
     Vector<4,float> color;
     TimeColorPair(): time(0) {} 
+    TimeColorPair(float time, Vector<4,float> color): 
+        time(time), color(color) {} 
 };
 
 template <class T> class ColorModifier { 
 private:
-    list< TimeColorPair > tcs;
+    list<TimeColorPair> tcs;
 
 public:
     ColorModifier() { }
@@ -31,11 +33,10 @@ public:
      * particles lifespan
      */
     void AddColor(float time, Vector<4,float> color) {
-        TimeColorPair tc;// = new TimeColorPair();
+        TimeColorPair tc;
         tc.time = time;
         tc.color = color;
         
-        ; 
         for (list< TimeColorPair >::iterator itr = tcs.begin(); 
              itr != tcs.end(); 
              itr++) {
@@ -48,23 +49,24 @@ public:
         tcs.push_back(tc);
     }
     
-    inline void Process(float deltaTime, T& particle) {
+    inline void Process(float dt, T& particle) {
         float time = particle.life / particle.maxlife;
-        if (tcs.empty() || time >= tcs.back().time) 
+        if (tcs.empty() || time > tcs.back().time) 
             return;
 
-        TimeColorPair tc;
+        TimeColorPair tcnext;
+        TimeColorPair tcbefore(0.0,particle.startColor);
         for (list< TimeColorPair >::iterator itr = tcs.begin(); 
              itr != tcs.end(); 
              itr++) 
             {
-                tc = *itr;
-                if (tc.time > time)
+                tcnext = *itr;
+                if (tcnext.time > time)
                     break;
+                tcbefore = tcnext;
             }
-        Vector<4,float> dif = (tc.color - particle.color);
-        dif.Normalize();
-        particle.color += ((tc.time-time)/tc.time)*(dif);
+        Vector<4,float> dif = (tcnext.color - tcbefore.color);
+        particle.color = tcbefore.color + dif*((time-tcbefore.time)/(tcnext.time-tcbefore.time));
     }
 };
 
