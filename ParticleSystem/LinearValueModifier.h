@@ -19,7 +19,7 @@ private:
     public:
         float time;
         U value;
-        TimeValuePair(): time(0) {} 
+    TimeValuePair(): time(0), value(U()) {} 
         TimeValuePair(float time, U value): 
             time(time), value(value) {} 
     };
