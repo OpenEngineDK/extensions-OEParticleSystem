@@ -1,7 +1,15 @@
 #ifndef _TEXTURE_PARTICLE_
 #define _TEXTURE_PARTICLE_
 
-#include<Resources/ITextureResource.h>
+#include <boost/shared_ptr.hpp>
+
+//forward declartion
+namespace OpenEngine {
+    namespace Resources {
+        class ITextureResource;
+        typedef boost::shared_ptr<ITextureResource> ITextureResourcePtr;
+    }
+}
 
 using OpenEngine::Resources::ITextureResourcePtr;
 
