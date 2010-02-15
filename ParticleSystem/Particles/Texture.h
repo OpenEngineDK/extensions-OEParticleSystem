@@ -6,17 +6,17 @@
 //forward declartion
 namespace OpenEngine {
     namespace Resources {
-        class ITextureResource;
-        typedef boost::shared_ptr<ITextureResource> ITextureResourcePtr;
+        class ITexture2D;
+        typedef boost::shared_ptr<ITexture2D> ITexture2DPtr;
     }
 }
 
-using OpenEngine::Resources::ITextureResourcePtr;
+using OpenEngine::Resources::ITexture2DPtr;
 
 namespace OpenEngine {
 namespace ParticleSystem {
     template <class T> struct Texture : T {
-        ITextureResourcePtr texture;
+        ITexture2DPtr texture;
         float rotation;
         float spin; // speed of the rotation
     };

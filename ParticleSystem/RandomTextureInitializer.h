@@ -18,7 +18,7 @@ template <class T>
     class RandomTextureInitializer { //: public IInitializer<T> {
 private:
         Vector<3,float> position;
-        vector<ITextureResourcePtr> textures;
+        vector<ITexture2DPtr> textures;
 public:
     RandomTextureInitializer() {
     }
@@ -28,7 +28,7 @@ public:
             particle.texture = textures[int((rand()/(float)RAND_MAX)*textures.size() - 1)]; 
     }
     
-    void AddTextureResource(ITextureResourcePtr texture) {
+    void AddTextureResource(ITexture2DPtr texture) {
         textures.push_back(texture);
     }
 };
