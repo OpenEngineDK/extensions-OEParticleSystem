@@ -11,7 +11,6 @@ namespace ParticleSystem {
 
 using namespace std;
 
-    
 template <class T, class U> 
 class LinearValueModifier { 
 private:
@@ -28,9 +27,6 @@ private:
 public:
     LinearValueModifier() { }
     
-    /* Make particle have color at certain time in the 
-     * particles lifespan
-     */
     void AddValue(float time, U value) {
         TimeValuePair tv;
         tv.time = time;

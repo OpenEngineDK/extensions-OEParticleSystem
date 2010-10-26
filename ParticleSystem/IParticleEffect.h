@@ -14,11 +14,11 @@ namespace ParticleSystem {
 using OpenEngine::Core::IListener;
 using OpenEngine::Scene::ISceneNode;
 
-class IParticleEffect: public virtual IListener<ParticleEventArg> {
+class IParticleEffect {//: public virtual IListener<ParticleEventArg> {
 public:
     virtual ~IParticleEffect() {}
 
-    virtual ISceneNode* GetSceneNode()  = 0;
+    // virtual ISceneNode* GetSceneNode()  = 0;
     virtual void SetActive(bool active) = 0;
     virtual bool GetActive()            = 0;
     virtual void Reset()                = 0;

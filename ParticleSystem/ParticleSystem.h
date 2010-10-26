@@ -34,7 +34,6 @@ public:
     ParticleSystem() {};
     virtual ~ParticleSystem() {};
 
-
     //@todo Reference  count particlecollections
     template<class T> ParticleCollection<T>* CreateParticles(unsigned int size) {
         T* particles = new T[size];

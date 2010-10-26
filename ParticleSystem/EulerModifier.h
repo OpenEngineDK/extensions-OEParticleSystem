@@ -7,16 +7,13 @@ namespace OpenEngine {
 namespace ParticleSystem {
 
 template <class T> class EulerModifier {
-private:
-    Vector<3,float> zero;
 public:
-    EulerModifier(): zero(Vector<3,float>(0.0,0.0,0.0)) {}
+    EulerModifier() {}
    
     void Process(float dt, T& particle) {
-        //float dtsec = dt/1000.0;
-        particle.velocity += particle.forces*dt;
-        particle.position += particle.velocity*dt;
-        particle.forces = zero;
+        particle.velocity += particle.forces * dt ;
+        particle.position += particle.velocity * dt;
+        particle.forces = Vector<3,float>();
     }
 };
 

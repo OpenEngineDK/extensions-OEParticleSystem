@@ -1,6 +1,7 @@
-#ADD_LIBRARY(Extensions_OEParticleSystem
-#  ParticleSystem/ParticleSystem.cpp
-#)
+# ADD_LIBRARY(Extensions_OEParticleSystem
+#     Renderers/OpenGL/ParticleRenderer.h
+#     Renderers/OpenGL/ParticleRenderer.cpp
+# )
 
 #TARGET_LINK_LIBRARIES (Extensions_OEParticleSystem
 		       #OpenEngine_Core
@@ -12,4 +13,4 @@
 		       #OpenEngine_Scene
 		       #OpenEngine_Utils
 		       #OpenEngine_Geometry
-		       #OpenEngine_Renderers_OpenGL)
+		       #
