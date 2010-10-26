@@ -81,6 +81,7 @@ public:
 
         //logger.info << "t is " << t << logger.end;
         while (time > interval) {
+            arg.approx = interval;
             particleSystem.Handle(arg);
             time -= interval;
         }
