@@ -11,8 +11,10 @@ namespace ParticleSystem {
 
 template <class T> class StaticForceModifier {
 private:
-    Vector<3,float> force;
+
 public:
+    Vector<3,float> force;
+
     StaticForceModifier(Vector<3,float> force): force(force) {}
 
     inline void Process(float dt, T& particle) {

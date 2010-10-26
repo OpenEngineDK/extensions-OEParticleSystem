@@ -220,6 +220,15 @@ public:
     LinearValueModifier<TYPE,Vector<4,float> >& GetColorModifier() { return colormod; }
     LinearValueModifier<TYPE,float>&  GetSizeModifier() { return sizem;}
 
+    // Edit
+    void SetLife(float l) { life = l; }
+    float GetLife() { return life; }
+
+    void SetSpeed(float l) { speed = l; }
+    float GetSpeed() { return speed; }
+
+    void SetGravity(Vector<3,float> l) { antigravity.force = l; }
+    Vector<3,float> GetGravity() { return antigravity.force; }
 
 };
 

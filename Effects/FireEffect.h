@@ -75,6 +75,10 @@ void Reset() {
     emitter->Reset();
 }
 
+SimpleEmitter* GetEmitter() {
+    return emitter;
+}
+
 ParticleCollection<TYPE>* GetParticles() { return emitter->GetParticles(); }
 
 };
