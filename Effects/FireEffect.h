@@ -21,8 +21,8 @@ public:
         emitter = new SimpleEmitter(system,
                                     200,     //numParticles
                                     0.04,    //emitRate
-                                    8.0,     //number 
-                                    2.0,     //numberVar
+                                    // 8.0,     //number 
+                                    // 2.0,     //numberVar
                                     .8,      //life
                                     0.2,     //lifeVar
                                     2*OpenEngine::Math::PI,    //angle

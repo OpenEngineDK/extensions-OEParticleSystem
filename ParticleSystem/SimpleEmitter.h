@@ -94,7 +94,7 @@ public:
     SimpleEmitter(OpenEngine::ParticleSystem::ParticleSystem& system,
                   unsigned int numParticles,
                   float emitRate,
-                  float number, float numberVar,
+                  // float number, float numberVar,
                   float life, float lifeVar,
                   float angle, 
                   float spin, float spinVar,
@@ -103,7 +103,7 @@ public:
         system(system),
         numParticles(numParticles),
         particles(system.CreateParticles<TYPE>(numParticles)),
-        number(number), numberVar(numberVar),
+        // number(number), numberVar(numberVar),
         life(life), lifeVar(lifeVar),
         angle(angle),
         spin(spin), spinVar(spinVar),
@@ -168,9 +168,11 @@ public:
         if (t)
             t->GetAccumulatedTransformations(&position, &direction);    
 
-        unsigned int emits = min(unsigned(round(RandomAttribute(number, numberVar))),
+        // unsigned int emits = min(unsigned(round(RandomAttribute(number, numberVar))),
+        //                          particles->GetSize()-particles->GetActiveParticles());
+        unsigned int emits = fmin(1.0,
                                  particles->GetSize()-particles->GetActiveParticles());
-    
+        
         //initialize particles
         for (unsigned int i = 0; i < emits; i++) {
             TYPE& particle = particles->NewParticle();
@@ -252,6 +254,22 @@ public:
 
     unsigned int GetNumParticles() {
         return numParticles;
+    }
+
+    void SetEmitInterval(float i) {
+        emitRate = i;
+    }
+
+    float GetEmitInterval(){
+        return emitRate;
+    }
+
+    void SetAngle(float angle) {
+        this->angle = angle;
+    }
+
+    float GetAngle(){
+        return angle;
     }
 
 };
