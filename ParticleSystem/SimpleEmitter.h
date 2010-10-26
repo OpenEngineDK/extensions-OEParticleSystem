@@ -50,8 +50,8 @@ protected:
     unsigned int numParticles;
     ParticleCollection<TYPE>* particles;
     // emit attributes
-    float number;
-    float numberVar;
+    // float number;
+    // float numberVar;
 
     float life;
     float lifeVar;
@@ -65,6 +65,9 @@ protected:
     
     float speed;
     float speedVar;
+
+    float size;
+    float sizeVar;
 
     float emitdt;
     float emitRate;
@@ -98,7 +101,8 @@ public:
                   float life, float lifeVar,
                   float angle, 
                   float spin, float spinVar,
-                  float speed, float speedVar):
+                  float speed, float speedVar,
+                  float size, float sizeVar):
         totalEmits(0),
         system(system),
         numParticles(numParticles),
@@ -108,6 +112,7 @@ public:
         angle(angle),
         spin(spin), spinVar(spinVar),
         speed(speed), speedVar(speedVar),
+        size(size), sizeVar(sizeVar),
         emitdt(0.0),
         emitRate(emitRate),
         active(true),
@@ -184,6 +189,7 @@ public:
             particle.maxlife = RandomAttribute(life, lifeVar);
             particle.rotation = 0;
             particle.spin = RandomAttribute(spin, spinVar);
+            particle.size = RandomAttribute(size, sizeVar);
 
             // texture
             particle.texture = tex;
@@ -241,8 +247,14 @@ public:
     void SetLife(float l) { life = l; }
     float GetLife() { return life; }
 
+    void SetLifeVar(float l) { lifeVar = l; }
+    float GetLifeVar() { return lifeVar; }
+
     void SetSpeed(float l) { speed = l; }
     float GetSpeed() { return speed; }
+
+    void SetSpeedVar(float l) { speedVar = l; }
+    float GetSpeedVar() { return speedVar; }
 
     void SetGravity(Vector<3,float> l) { antigravity.force = l; }
     Vector<3,float> GetGravity() { return antigravity.force; }
@@ -270,6 +282,22 @@ public:
 
     float GetAngle(){
         return angle;
+    }
+
+    void SetSize(float size) {
+        this->size = size;
+    }
+
+    float GetSize(){
+        return size;
+    }
+
+    void SetSizeVar(float size) {
+        this->sizeVar = size;
+    }
+
+    float GetSizeVar(){
+        return sizeVar;
     }
 
 };

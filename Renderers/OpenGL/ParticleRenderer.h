@@ -105,6 +105,7 @@ public:
             // scale 
             up = up * particle.size;
             right = right * particle.size;
+
             
             // glPushMatrix();
             // glTranslatef(particle.position[0], particle.position[1], particle.position[2]);
@@ -136,20 +137,21 @@ public:
             // glVertex3f(1, -1, 0);
             // glEnd();
 
+            const Vector<3,float> start = particle.position - (up*0.5) - (right*0.5);
             Vector<3,float> p;
 
             glBegin(GL_QUADS);
             glTexCoord2f(0.0, 0.0);
-            p = particle.position + up;
+            p = start + up;
             glVertex3f(p[0], p[1], p[2]);
             glTexCoord2f(0.0, 1.0);
             p += right;
             glVertex3f(p[0], p[1], p[2]);
             glTexCoord2f(1.0, 1.0);
-             p = particle.position + right;
+             p = start + right;
             glVertex3f(p[0], p[1], p[2]);
             glTexCoord2f(1.0, 0.0);
-            p = particle.position;
+            p = start;
             glVertex3f(p[0], p[1], p[2]);
             glEnd();
             // glPopMatrix();

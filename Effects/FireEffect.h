@@ -29,8 +29,9 @@ public:
                                     0.0,     //spin
                                     0.0,     //spinVar
                                     10.0,    //speed
-                                    1.0      //speedVar
-                                    );
+                                    1.0,      //speedVar
+                                    10.0,    //size 
+                                    0.0);    //sizeVar
         // hack: create the particles
         emitter->Handle(ParticleEventArg(system, 0));
         system.ProcessEvent().Attach(*emitter);
@@ -45,10 +46,10 @@ public:
         colormod.AddValue( .0, Vector<4,float>(0.1,  0.1,  .3, .1)); // blueish
         
         // size variations 
-        sizem.AddValue(1.0, 30); 
+        // sizem.AddValue(1.0, 30); 
         // sizem.AddValue(.65, 7);
         // sizem.AddValue( .18, 6);    
-        sizem.AddValue( .0, 20);    
+        // sizem.AddValue( .0, 20);    
         
         ITexture2DPtr tex1 = 
             // ResourceManager<ITexture2D>::Create("Smoke/smoke01.tga");
