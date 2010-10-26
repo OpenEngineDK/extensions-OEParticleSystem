@@ -40,6 +40,21 @@ public:
         return new ParticleCollection<T>(particles, size);
     }
 
+    template<class T> void ResizeParticles(ParticleCollection<T>** particles, unsigned int size) {
+        ParticleCollection<T>* newParticles = CreateParticles<T>(size);
+        // delete *particles;
+        *particles = newParticles;
+        // particles->iterator.Reset(); 
+        // for (unsigned int i = 0; i < size; ++i) {
+            
+        // }
+    }
+
+    template<class T> void DeleteParticles(ParticleCollection<T>* particles) {
+        delete particles;
+    }
+
+    
     Event<ParticleEventArg>& ProcessEvent() {
         return process;
     }

@@ -31,11 +31,13 @@
 #include <ParticleSystem/Particles/RenderParticle.h>
 
 #include <Core/IListener.h>
+// #include <Utils/PropertyTree.h>
 
 namespace OpenEngine {
 namespace ParticleSystem {
 
 using Scene::TransformationNode;
+// using Utils::PropertyTree;
     
 class SimpleEmitter: public IListener<ParticleEventArg> {
 public:
@@ -44,6 +46,7 @@ public:
 private:
     unsigned int totalEmits;
 protected:
+    OpenEngine::ParticleSystem::ParticleSystem& system;
     unsigned int numParticles;
     ParticleCollection<TYPE>* particles;
     // emit attributes
@@ -78,8 +81,18 @@ protected:
     LifespanModifier<TYPE> lifemod;
     RandomGenerator randomgen;
     TransformationNode* t;
+    // PropertyTree* ptree;
+
+    // void LoadPropertyTree() {
+    //     if (ptree == NULL) return;
+    // }
 public:
-    SimpleEmitter(unsigned int numParticles,
+    // SimpleEmitter(PropertyTree* ptree): ptree(ptree) {
+    //     LoadPropertyTree();
+    // }
+
+    SimpleEmitter(OpenEngine::ParticleSystem::ParticleSystem& system,
+                  unsigned int numParticles,
                   float emitRate,
                   float number, float numberVar,
                   float life, float lifeVar,
@@ -87,8 +100,9 @@ public:
                   float spin, float spinVar,
                   float speed, float speedVar):
         totalEmits(0),
+        system(system),
         numParticles(numParticles),
-        particles(NULL),//system.CreateParticles<TYPE>(numParticles)),
+        particles(system.CreateParticles<TYPE>(numParticles)),
         number(number), numberVar(numberVar),
         life(life), lifeVar(lifeVar),
         angle(angle),
@@ -98,7 +112,8 @@ public:
         emitRate(emitRate),
         active(true),
         antigravity(Vector<3,float>()),
-        t(NULL) 
+        t(NULL)
+        // ptree(NULL)
     {
         randomgen.SeedWithTime();
     }
@@ -109,8 +124,8 @@ public:
     
     void Handle(ParticleEventArg arg) {
         // todo: maybe an initialize event would be better.
-        if (particles == NULL) 
-            particles = arg.particleSystem.CreateParticles<TYPE>(numParticles);
+        // if (particles == NULL) 
+        //     particles = arg.particleSystem.CreateParticles<TYPE>(numParticles);
 
         // only emit particles if we are active
         if (active) {
@@ -229,6 +244,15 @@ public:
 
     void SetGravity(Vector<3,float> l) { antigravity.force = l; }
     Vector<3,float> GetGravity() { return antigravity.force; }
+
+    void SetNumParticles(unsigned int numParticles) {
+        this->numParticles = numParticles;
+        system.ResizeParticles(&particles, numParticles);
+    }
+
+    unsigned int GetNumParticles() {
+        return numParticles;
+    }
 
 };
 

@@ -9,7 +9,7 @@
 
 #include <Renderers/IRenderingView.h>
 #include <ParticleSystem/ParticleCollection.h>
-
+#include <ParticleSystem/SimpleEmitter.h>
 #include <Math/Quaternion.h>
 #include <Math/Vector.h>
 
@@ -23,16 +23,19 @@ namespace OpenGL {
 
 using Math::Quaternion;
 using Math::Vector;
-
+using ParticleSystem::SimpleEmitter;
 // ParticleType must include at least the same template particle
 // arguments as RenderParticle
 template <class ParticleType>
 class ParticleRenderer: public IRenderingView {
 private:
-    ParticleSystem::ParticleCollection<ParticleType>* particles;
+    // ParticleSystem::ParticleCollection<ParticleType>* particles;
+    SimpleEmitter& emitter;
 public:
-    ParticleRenderer(ParticleSystem::ParticleCollection<ParticleType>* particles) 
-        : particles(particles)
+    // ParticleRenderer(ParticleSystem::ParticleCollection<ParticleType>* particles) 
+    // : particles(particles)
+    ParticleRenderer(SimpleEmitter& emitter)
+        : emitter(emitter)
     {}
 
     virtual ~ParticleRenderer() {
@@ -40,6 +43,7 @@ public:
 
     void Handle(RenderingEventArg arg) {
         IRenderer* renderer = arg.canvas.GetRenderer();
+        ParticleSystem::ParticleCollection<ParticleType>* particles = emitter.GetParticles();
         const Vector<3,float> campos = arg.canvas.GetViewingVolume()->GetPosition();
 
         // glPushAttrib(GL_LIGHTING);
