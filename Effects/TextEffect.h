@@ -49,7 +49,7 @@ using namespace ParticleSystem;
 using namespace Resources;
 using namespace Math;
 
-class TextEffect : public IParticleEffect {
+class TextEffect : public IListener<ParticleEventArg>, public IParticleEffect {
 public:
     typedef Color < Texture <Size < Velocity < Forces < Position < Life < IParticle > > > > > > >  TYPE;
 

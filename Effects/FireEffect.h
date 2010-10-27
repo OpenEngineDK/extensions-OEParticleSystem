@@ -35,7 +35,7 @@ public:
         system.ProcessEvent().Attach(*emitter);
         
         LinearValueModifier<TYPE,Vector<4,float> >& colormod = emitter->GetColorModifier();
-        LinearValueModifier<TYPE,float>&  sizem = emitter->GetSizeModifier();
+        // LinearValueModifier<TYPE,float>&  sizem = emitter->GetSizeModifier();
 
         // color modifier
         colormod.AddValue( .9, Vector<4,float>(0.1, 0.01, .01, .4)); // blackish
@@ -81,6 +81,7 @@ SimpleEmitter* GetEmitter() {
 ParticleCollection<TYPE>* GetParticles() { return emitter->GetParticles(); }
 
 };
+
 
 }
 }
