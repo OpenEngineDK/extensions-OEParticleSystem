@@ -32,8 +32,6 @@ public:
                                     1.0,      //speedVar
                                     10.0,    //size 
                                     0.0);    //sizeVar
-        // hack: create the particles
-        emitter->Handle(ParticleEventArg(system, 0));
         system.ProcessEvent().Attach(*emitter);
         
         LinearValueModifier<TYPE,Vector<4,float> >& colormod = emitter->GetColorModifier();
