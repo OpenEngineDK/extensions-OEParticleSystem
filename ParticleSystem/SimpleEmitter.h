@@ -31,20 +31,28 @@
 #include <ParticleSystem/Particles/RenderParticle.h>
 
 #include <Core/IListener.h>
+
+#include <Scene/SearchTool.h>
+#include <Scene/EmitterNode.h>
+
 // #include <Utils/PropertyTree.h>
 
 namespace OpenEngine {
 namespace ParticleSystem {
 
 using Scene::TransformationNode;
+using Scene::EmitterNode;
+using Scene::SearchTool;
 // using Utils::PropertyTree;
     
-class SimpleEmitter: public IListener<ParticleEventArg> {
+class SimpleEmitter: public IListener<ParticleEventArg>
+                   , public EmitterNode {
 public:
     typedef Forces < Life < Velocity < RenderParticle > > >  TYPE;
     ParticleCollection<TYPE>* GetParticles() { return particles; }
 private:
     unsigned int totalEmits;
+    SearchTool st;
 protected:
     OpenEngine::ParticleSystem::ParticleSystem& system;
     unsigned int numParticles;
@@ -83,7 +91,7 @@ protected:
     LinearValueModifier<TYPE,float> sizem;
     LifespanModifier<TYPE> lifemod;
     RandomGenerator randomgen;
-    TransformationNode* t;
+    // TransformationNode* t;
     // PropertyTree* ptree;
 
     // void LoadPropertyTree() {
@@ -103,6 +111,7 @@ public:
                   float spin, float spinVar,
                   float speed, float speedVar,
                   float size, float sizeVar):
+        EmitterNode(this),
         totalEmits(0),
         system(system),
         numParticles(numParticles),
@@ -116,8 +125,8 @@ public:
         emitdt(0.0),
         emitRate(emitRate),
         active(true),
-        antigravity(Vector<3,float>()),
-        t(NULL)
+        antigravity(Vector<3,float>())
+        // t(NULL)
         // ptree(NULL)
     {
         randomgen.SeedWithTime();
@@ -170,8 +179,9 @@ public:
     unsigned int inline Emit() {
         Vector<3,float> position;
         Quaternion<float> direction;
-        if (t)
-            t->GetAccumulatedTransformations(&position, &direction);    
+        TransformationNode* t = st.AncestorTransformationNode(this, true);
+        // if (t) t->GetAccumulatedTransformations(&p, &q); 
+        if (t) t->GetAccumulatedTransformations(&position, &direction);    
 
         // unsigned int emits = min(unsigned(round(RandomAttribute(number, numberVar))),
         //                          particles->GetSize()-particles->GetActiveParticles());
@@ -232,13 +242,13 @@ public:
         tex = texr;
     }
 
-    TransformationNode* GetTransformationNode() {
-        return t;
-    }
+    // TransformationNode* GetTransformationNode() {
+    //     return t;
+    // }
 
-    void SetTransformationNode(TransformationNode* node) {
-        t = node;
-    }
+    // void SetTransformationNode(TransformationNode* node) {
+    //     t = node;
+    // }
 
     LinearValueModifier<TYPE,Vector<4,float> >& GetColorModifier() { return colormod; }
     LinearValueModifier<TYPE,float>&  GetSizeModifier() { return sizem;}

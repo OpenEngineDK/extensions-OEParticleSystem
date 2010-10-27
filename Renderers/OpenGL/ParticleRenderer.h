@@ -12,6 +12,7 @@
 #include <ParticleSystem/SimpleEmitter.h>
 #include <Math/Quaternion.h>
 #include <Math/Vector.h>
+#include <Scene/EmitterNode.h>
 
 #include <Meta/OpenGL.h>
 
@@ -23,28 +24,34 @@ namespace OpenGL {
 
 using Math::Quaternion;
 using Math::Vector;
+using Scene::EmitterNode;
 using ParticleSystem::SimpleEmitter;
+
 // ParticleType must include at least the same template particle
 // arguments as RenderParticle
 template <class ParticleType>
 class ParticleRenderer: public IRenderingView {
 private:
     // ParticleSystem::ParticleCollection<ParticleType>* particles;
-    SimpleEmitter& emitter;
+    IRenderer* renderer;
+    Vector<3,float> campos;
 public:
     // ParticleRenderer(ParticleSystem::ParticleCollection<ParticleType>* particles) 
     // : particles(particles)
-    ParticleRenderer(SimpleEmitter& emitter)
-        : emitter(emitter)
+    ParticleRenderer()
     {}
 
     virtual ~ParticleRenderer() {
     }
 
     void Handle(RenderingEventArg arg) {
-        IRenderer* renderer = arg.canvas.GetRenderer();
-        ParticleSystem::ParticleCollection<ParticleType>* particles = emitter.GetParticles();
-        const Vector<3,float> campos = arg.canvas.GetViewingVolume()->GetPosition();
+        arg.canvas.GetScene()->Accept(*this);
+        renderer = arg.canvas.GetRenderer();
+        campos = arg.canvas.GetViewingVolume()->GetPosition();
+    }
+
+    void VisitEmitterNode(EmitterNode* node) {
+        ParticleSystem::ParticleCollection<ParticleType>* particles = node->GetEmitter()->GetParticles();
 
         // glPushAttrib(GL_LIGHTING);
         glDisable(GL_LIGHTING);
@@ -162,6 +169,7 @@ public:
         glDisable(GL_BLEND);
         CHECK_FOR_GL_ERROR();
     }
+
 };
 
 }
