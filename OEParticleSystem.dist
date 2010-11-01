@@ -1,0 +1,9 @@
+# PropertyTree dist
+
+dist /extensions/PropertyTree/PropertyTree.dist       http://www.openengine.dk/code/extensions/PropertyTree/PropertyTree.dist
+
+# standard set of extensions
+darcs /extensions/OEParticleSystem        http://openengine.dk/code/extensions/OEParticleSystem
+
+darcs-dev /extensions/OEParticleSystem    fh.daimi.au.dk:/users/cgd/code/extensions/OEParticleSystem
+
