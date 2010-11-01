@@ -18,11 +18,14 @@ private:
     public:
         float time;
         U value;
-    TimeValuePair(): time(0), value(U()) {} 
+        TimeValuePair(): time(0), value(U()) {} 
         TimeValuePair(float time, U value): 
             time(time), value(value) {} 
+        bool operator<(const TimeValuePair& that) {
+            return this->time < that.time;
+        }
     };
-    list<TimeValuePair > tvs;
+    list<TimeValuePair> tvs;
 
 public:
     LinearValueModifier() { }
@@ -46,6 +49,7 @@ public:
             }
         }
         tvs.push_back(tv);
+        tvs.sort();
     }
     
     inline void Process(float dt, T& particle, U& val) {
