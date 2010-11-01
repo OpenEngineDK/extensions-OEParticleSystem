@@ -26,7 +26,11 @@ private:
 
 public:
     LinearValueModifier() { }
-    
+ 
+    void Clear() {
+        tvs.clear();
+    }
+   
     void AddValue(float time, U value) {
         TimeValuePair tv;
         tv.time = time;

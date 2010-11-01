@@ -15,6 +15,7 @@ private:
 public:
     Vector<3,float> force;
 
+    StaticForceModifier() {}
     StaticForceModifier(Vector<3,float> force): force(force) {}
 
     inline void Process(float dt, T& particle) {

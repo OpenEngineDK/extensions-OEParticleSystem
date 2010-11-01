@@ -35,7 +35,7 @@
 #include <Scene/SearchTool.h>
 #include <Scene/EmitterNode.h>
 
-// #include <Utils/PropertyTree.h>
+#include <Utils/PropertyTree.h>
 
 namespace OpenEngine {
 namespace ParticleSystem {
@@ -43,10 +43,13 @@ namespace ParticleSystem {
 using Scene::TransformationNode;
 using Scene::EmitterNode;
 using Scene::SearchTool;
-// using Utils::PropertyTree;
+using Utils::PropertyTree;
+using Utils::PropertyTreeNode;
+using Utils::PropertiesChangedEventArg;
     
 class SimpleEmitter: public IListener<ParticleEventArg>
-                   , public EmitterNode {
+                   , public EmitterNode
+                   , public IListener<PropertiesChangedEventArg> {
 public:
     typedef Forces < Life < Velocity < RenderParticle > > >  TYPE;
     ParticleCollection<TYPE>* GetParticles() { return particles; }
@@ -58,8 +61,6 @@ protected:
     unsigned int numParticles;
     ParticleCollection<TYPE>* particles;
     // emit attributes
-    // float number;
-    // float numberVar;
 
     float life;
     float lifeVar;
@@ -86,21 +87,71 @@ protected:
 
     //modifiers
     EulerModifier<TYPE> euler;
-    StaticForceModifier<TYPE> antigravity;
+    StaticForceModifier<TYPE> gravity;
     LinearValueModifier<TYPE,Vector<4,float> > colormod;
-    LinearValueModifier<TYPE,float> sizem;
+    LinearValueModifier<TYPE,float> sizemod;
     LifespanModifier<TYPE> lifemod;
     RandomGenerator randomgen;
-    // TransformationNode* t;
-    // PropertyTree* ptree;
+    PropertyTree* ptree;
 
-    // void LoadPropertyTree() {
-    //     if (ptree == NULL) return;
-    // }
+    inline void LoadPropertyTree() {
+        if (ptree == NULL) return;
+        
+        if (ptree->HaveNode("init")) {
+            PropertyTreeNode init = ptree->GetNode("init");
+            
+            unsigned int count = init.GetPath("particles", 200);
+            if (numParticles != count) SetNumParticles(count);
+            
+            SetAngle(init.Get("angle", 0.0));
+            SetLife(init.Get("life", 1.0));
+            SetLifeVar(init.Get("lifevar", 0.0));
+            spin = init.Get("spin", 0.0);
+            spinVar = init.Get("spinvar", 0.0);
+            SetSpeed(init.Get("speed", 45.0));
+            SetSpeedVar(init.Get("speedvar", 10.0));
+            SetSize(init.Get("size", 4.0));
+            SetSizeVar(init.Get("size", 0.0));
+            SetEmitInterval(init.Get("emitrate", 0.001));
+            SetGravity(init.Get("gravity", Vector<3,float>()));
+        }
+
+        if (ptree->HaveNode("color")) {
+            PropertyTreeNode color = ptree->GetNode("color");
+            colormod.Clear();
+            for (unsigned int i = 0; i < color.GetSize(); ++i) {
+                PropertyTreeNode entry = color.GetNode(i);
+                if (entry.HaveNode("time") && entry.HaveNode("value")) {
+                    colormod.AddValue(entry.Get("time", 0.0f), entry.Get("value", Vector<4,float>()));
+                }
+            }
+        }
+
+        if (ptree->HaveNode("size")) {
+            PropertyTreeNode sz = ptree->GetNode("size");
+            sizemod.Clear();
+            for (unsigned int i = 0; i < sz.GetSize(); ++i) {
+                PropertyTreeNode entry = sz.GetNode(i);
+                if (entry.HaveNode("time") && entry.HaveNode("value")) {
+                    sizemod.AddValue(entry.Get("time", 0.0f), entry.Get("value", 0.0));
+                }
+            }
+        }
+    }
 public:
-    // SimpleEmitter(PropertyTree* ptree): ptree(ptree) {
-    //     LoadPropertyTree();
-    // }
+    SimpleEmitter(OpenEngine::ParticleSystem::ParticleSystem& system,
+                  PropertyTree* ptree)
+        : EmitterNode(this)
+        , system(system) 
+        , particles(system.CreateParticles<TYPE>(200))
+        , ptree(ptree)
+    {
+        
+        randomgen.SeedWithTime();
+        ptree->Reload();
+        LoadPropertyTree();
+        ptree->PropertiesChangedEvent().Attach(*this);
+    }
 
     SimpleEmitter(OpenEngine::ParticleSystem::ParticleSystem& system,
                   unsigned int numParticles,
@@ -116,7 +167,6 @@ public:
         system(system),
         numParticles(numParticles),
         particles(system.CreateParticles<TYPE>(numParticles)),
-        // number(number), numberVar(numberVar),
         life(life), lifeVar(lifeVar),
         angle(angle),
         spin(spin), spinVar(spinVar),
@@ -125,9 +175,7 @@ public:
         emitdt(0.0),
         emitRate(emitRate),
         active(true),
-        antigravity(Vector<3,float>())
-        // t(NULL)
-        // ptree(NULL)
+        ptree(NULL)
     {
         randomgen.SeedWithTime();
     }
@@ -136,6 +184,10 @@ public:
         delete particles;
     }
     
+    void Handle(PropertiesChangedEventArg arg) {
+        LoadPropertyTree();
+    }
+
     void Handle(ParticleEventArg arg) {
         // todo: maybe an initialize event would be better.
         // if (particles == NULL) 
@@ -143,6 +195,7 @@ public:
 
         // only emit particles if we are active
         if (active) {
+            if (emitRate <= 0.0) return;
             // fixed emit rate
             emitdt += arg.dt;
             while (emitdt > emitRate) {
@@ -157,9 +210,9 @@ public:
              particles->iterator.Next()) {
             TYPE& particle = particles->iterator.Element();
         
-            antigravity.Process(arg.dt, particle);
+            gravity.Process(arg.dt, particle);
             euler.Process(arg.dt, particle);
-            sizem.Process(arg.dt, particle, particle.size);
+            sizemod.Process(arg.dt, particle, particle.size);
             colormod.Process(arg.dt, particle, particle.color);
             lifemod.Process(arg.dt, particle);
         
@@ -180,45 +233,42 @@ public:
         Vector<3,float> position;
         Quaternion<float> direction;
         TransformationNode* t = st.AncestorTransformationNode(this, true);
-        // if (t) t->GetAccumulatedTransformations(&p, &q); 
         if (t) t->GetAccumulatedTransformations(&position, &direction);    
 
-        // unsigned int emits = min(unsigned(round(RandomAttribute(number, numberVar))),
-        //                          particles->GetSize()-particles->GetActiveParticles());
-        unsigned int emits = fmin(1.0,
-                                 particles->GetSize()-particles->GetActiveParticles());
+        if (particles->GetSize() == particles->GetActiveParticles()) return 0;
+        // const unsigned int emits = 1;
         
         //initialize particles
-        for (unsigned int i = 0; i < emits; i++) {
-            TYPE& particle = particles->NewParticle();
+        // for (unsigned int i = 0; i < emits; i++) {
+        TYPE& particle = particles->NewParticle();
         
-            // position based on transformation hierarchy (point emission)
-            particle.position = position;
+        // position based on transformation hierarchy (point emission)
+        particle.position = position;
         
-            particle.life = 0;
-            particle.maxlife = RandomAttribute(life, lifeVar);
-            particle.rotation = 0;
-            particle.spin = RandomAttribute(spin, spinVar);
-            particle.size = RandomAttribute(size, sizeVar);
-
-            // texture
-            particle.texture = tex;
-            particle.rotation = 0;
-            particle.spin = 0;
-    
-            // random direction
-            float r = randomgen.UniformFloat(-1.0,1.0)*angle;
-            float p = randomgen.UniformFloat(-1.0,1.0)*angle;
-            float y = randomgen.UniformFloat(-1.0,1.0)*angle;
-            Quaternion<float> q(r,p, y);
-            q.Normalize();
-    
-            // set velocity and forces for use with euler integration
-            particle.velocity = q.RotateVector(direction.RotateVector(Vector<3,float>(0.0,-1.0,0.0))
-                                               *RandomAttribute(speed,speedVar));
-            particle.forces = Vector<3,float>(0.0,0.0,0.0);
-        }
-        return emits;
+        particle.life = 0;
+        particle.maxlife = RandomAttribute(life, lifeVar);
+        particle.rotation = 0;
+        particle.spin = RandomAttribute(spin, spinVar);
+        particle.size = RandomAttribute(size, sizeVar);
+        
+        // texture
+        particle.texture = tex;
+        particle.rotation = 0;
+        particle.spin = 0;
+        
+        // random direction
+        float r = randomgen.UniformFloat(-1.0,1.0)*angle;
+        float p = randomgen.UniformFloat(-1.0,1.0)*angle;
+        float y = randomgen.UniformFloat(-1.0,1.0)*angle;
+        Quaternion<float> q(r,p, y);
+        q.Normalize();
+        
+        // set velocity and forces for use with euler integration
+        particle.velocity = q.RotateVector(direction.RotateVector(Vector<3,float>(0.0,-1.0,0.0))
+                                           *RandomAttribute(speed,speedVar));
+        particle.forces = Vector<3,float>(0.0,0.0,0.0);
+    // }
+        return 1;
     }
 
     void SetActive(bool active) {
@@ -242,16 +292,12 @@ public:
         tex = texr;
     }
 
-    // TransformationNode* GetTransformationNode() {
-    //     return t;
-    // }
-
     // void SetTransformationNode(TransformationNode* node) {
     //     t = node;
     // }
 
     LinearValueModifier<TYPE,Vector<4,float> >& GetColorModifier() { return colormod; }
-    LinearValueModifier<TYPE,float>&  GetSizeModifier() { return sizem;}
+    LinearValueModifier<TYPE,float>&  GetSizeModifier() { return sizemod;}
 
     // Edit
     void SetLife(float l) { life = l; }
@@ -266,8 +312,8 @@ public:
     void SetSpeedVar(float l) { speedVar = l; }
     float GetSpeedVar() { return speedVar; }
 
-    void SetGravity(Vector<3,float> l) { antigravity.force = l; }
-    Vector<3,float> GetGravity() { return antigravity.force; }
+    void SetGravity(Vector<3,float> l) { gravity.force = l; }
+    Vector<3,float> GetGravity() { return gravity.force; }
 
     void SetNumParticles(unsigned int numParticles) {
         this->numParticles = numParticles;
