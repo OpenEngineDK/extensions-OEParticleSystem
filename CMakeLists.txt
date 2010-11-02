@@ -3,5 +3,7 @@ ADD_LIBRARY(Extensions_OEParticleSystem
   Scene/EmitterNode.cpp
 )
 
-#TARGET_LINK_LIBRARIES (Extensions_OEParticleSystem
+TARGET_LINK_LIBRARIES (Extensions_OEParticleSystem
+  Extensions_PropertyTree
+)
 
