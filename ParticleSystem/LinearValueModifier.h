@@ -4,7 +4,6 @@
 #include <ParticleSystem/ParticleCollection.h>
 
 #include <list>
-//#include <vector>
 
 namespace OpenEngine {
 namespace ParticleSystem {

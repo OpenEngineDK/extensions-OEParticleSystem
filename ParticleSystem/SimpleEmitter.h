@@ -68,7 +68,8 @@ protected:
     // angle is the angular deviation from the direction of
     // the velocity
     float angle;
-    
+    float radius;
+
     float spin;
     float spinVar;
     
@@ -81,7 +82,7 @@ protected:
     float emitdt;
     float emitRate;
 
-    ITexture2DPtr tex;
+    ITexture2DPtr texr;
 
     bool active;
 
@@ -104,6 +105,7 @@ protected:
             if (numParticles != count) SetNumParticles(count);
             
             SetAngle(init.Get("angle", 0.0));
+            SetRadius(init.Get("radius", 0.0));
             SetLife(init.Get("life", 1.0));
             SetLifeVar(init.Get("lifevar", 0.0));
             spin = init.Get("spin", 0.0);
@@ -116,9 +118,9 @@ protected:
             SetGravity(init.Get("gravity", Vector<3,float>()));
         }
 
+        colormod.Clear();
         if (ptree->HaveNode("color")) {
             PropertyTreeNode color = ptree->GetNode("color");
-            colormod.Clear();
             for (unsigned int i = 0; i < color.GetSize(); ++i) {
                 PropertyTreeNode entry = color.GetNode(i);
                 if (entry.HaveNode("time") && entry.HaveNode("value")) {
@@ -127,9 +129,9 @@ protected:
             }
         }
 
+        sizemod.Clear();
         if (ptree->HaveNode("size")) {
             PropertyTreeNode sz = ptree->GetNode("size");
-            sizemod.Clear();
             for (unsigned int i = 0; i < sz.GetSize(); ++i) {
                 PropertyTreeNode entry = sz.GetNode(i);
                 if (entry.HaveNode("time") && entry.HaveNode("value")) {
@@ -146,7 +148,6 @@ public:
         , particles(system.CreateParticles<TYPE>(200))
         , ptree(ptree)
     {
-        
         randomgen.SeedWithTime();
         ptree->Reload();
         LoadPropertyTree();
@@ -169,6 +170,7 @@ public:
         particles(system.CreateParticles<TYPE>(numParticles)),
         life(life), lifeVar(lifeVar),
         angle(angle),
+        radius(0.0),
         spin(spin), spinVar(spinVar),
         speed(speed), speedVar(speedVar),
         size(size), sizeVar(sizeVar),
@@ -236,10 +238,8 @@ public:
         if (t) t->GetAccumulatedTransformations(&position, &direction);    
 
         if (particles->GetSize() == particles->GetActiveParticles()) return 0;
-        // const unsigned int emits = 1;
-        
-        //initialize particles
-        // for (unsigned int i = 0; i < emits; i++) {
+
+        //initialize particle
         TYPE& particle = particles->NewParticle();
         
         // position based on transformation hierarchy (point emission)
@@ -252,7 +252,7 @@ public:
         particle.size = RandomAttribute(size, sizeVar);
         
         // texture
-        particle.texture = tex;
+        // particle.texture = texr;
         particle.rotation = 0;
         particle.spin = 0;
         
@@ -264,10 +264,10 @@ public:
         q.Normalize();
         
         // set velocity and forces for use with euler integration
-        particle.velocity = q.RotateVector(direction.RotateVector(Vector<3,float>(0.0,-1.0,0.0))
-                                           *RandomAttribute(speed,speedVar));
+        particle.velocity = q.RotateVector(direction.RotateVector(Vector<3,float>(0.0,-RandomAttribute(speed,speedVar),0.0)));
+
+        particle.position += q.RotateVector(direction.RotateVector(Vector<3,float>(0.0,-radius,0.0)));
         particle.forces = Vector<3,float>(0.0,0.0,0.0);
-    // }
         return 1;
     }
 
@@ -289,12 +289,12 @@ public:
 #if OE_SAFE
         if (texr.get() == NULL) throw new Exception("SimpleEmitter got NULL texture"); 
 #endif
-        tex = texr;
+        this->texr = texr;
     }
 
-    // void SetTransformationNode(TransformationNode* node) {
-    //     t = node;
-    // }
+    ITexture2DPtr GetTexture() {
+        return texr;
+    }
 
     LinearValueModifier<TYPE,Vector<4,float> >& GetColorModifier() { return colormod; }
     LinearValueModifier<TYPE,float>&  GetSizeModifier() { return sizemod;}
@@ -338,6 +338,14 @@ public:
 
     float GetAngle(){
         return angle;
+    }
+
+    void SetRadius(float radius) {
+        this->radius = radius;
+    }
+
+    float GetRadius(){
+        return radius;
     }
 
     void SetSize(float size) {

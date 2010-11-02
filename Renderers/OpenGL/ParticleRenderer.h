@@ -13,7 +13,7 @@
 #include <Math/Quaternion.h>
 #include <Math/Vector.h>
 #include <Scene/EmitterNode.h>
-
+#include <Resources/ITexture2D.h>
 #include <Meta/OpenGL.h>
 
 #include <Logging/Logger.h>
@@ -38,22 +38,22 @@ private:
 public:
     // ParticleRenderer(ParticleSystem::ParticleCollection<ParticleType>* particles) 
     // : particles(particles)
-    ParticleRenderer()
+    ParticleRenderer(): renderer(NULL)
     {}
 
     virtual ~ParticleRenderer() {
     }
 
     void Handle(RenderingEventArg arg) {
-        arg.canvas.GetScene()->Accept(*this);
         renderer = arg.canvas.GetRenderer();
         campos = arg.canvas.GetViewingVolume()->GetPosition();
+        arg.canvas.GetScene()->Accept(*this);
     }
 
     void VisitEmitterNode(EmitterNode* node) {
-        ParticleSystem::ParticleCollection<ParticleType>* particles = node->GetEmitter()->GetParticles();
+        SimpleEmitter* emitter = node->GetEmitter();
+        ParticleSystem::ParticleCollection<ParticleType>* particles = emitter->GetParticles();
 
-        // glPushAttrib(GL_LIGHTING);
         glDisable(GL_LIGHTING);
         glDepthMask(GL_FALSE);
         glEnable(GL_BLEND);
@@ -62,28 +62,26 @@ public:
         glBlendFunc(GL_SRC_ALPHA,GL_ONE); // additive blending
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_COLOR_MATERIAL);
-    
+
+        //Set texture
+        ITexture2DPtr texr = emitter->GetTexture();
+        if (texr.get() != NULL) {
+            if (texr->GetID() == 0) {
+                // maybe only load texture on intialize
+                renderer->LoadTexture(texr);
+            }
+            glBindTexture(GL_TEXTURE_2D, texr->GetID());
+        }
+        else {
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+        
         for (particles->iterator.Reset(); 
              particles->iterator.HasNext(); 
              particles->iterator.Next()) {
-                
-            ParticleType& particle = particles->iterator.Element();
-            ITexture2DPtr texr = particle.texture;
-                
-            //Set texture
-            if (texr != NULL) {
-                if (texr->GetID() == 0) {
-                    renderer->LoadTexture(texr);
-                    //logger.info << texr->GetID() << logger.end;
-                }
-                glBindTexture(GL_TEXTURE_2D, texr->GetID());
-            }
-                
-            else {
-                glBindTexture(GL_TEXTURE_2D, 0);
-            }
-                
             
+            ParticleType& particle = particles->iterator.Element();
+
             Vector<3,float> lookat(0.0,0.0,1.0);
             Vector<3,float> up(1.0, 0.0, 0.0);
             Vector<3,float> right(0.0,1.0,0.0);
@@ -112,7 +110,6 @@ public:
             // scale 
             up = up * particle.size;
             right = right * particle.size;
-
             
             // glPushMatrix();
             // glTranslatef(particle.position[0], particle.position[1], particle.position[2]);
@@ -164,10 +161,14 @@ public:
             // glPopMatrix();
 
         }
-        glDisable(GL_LIGHTING);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_COLOR_MATERIAL);
         glDepthMask(GL_TRUE);
         glDisable(GL_BLEND);
         CHECK_FOR_GL_ERROR();
+
+        node->VisitSubNodes(*this);
     }
 
 };
