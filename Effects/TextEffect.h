@@ -48,6 +48,7 @@ using namespace Scene;
 using namespace ParticleSystem;
 using namespace Resources;
 using namespace Math;
+using OpenEngine::ParticleSystem::Color;
 
 class TextEffect : public IListener<ParticleEventArg>, public IParticleEffect {
 public:

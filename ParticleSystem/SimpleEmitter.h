@@ -36,6 +36,7 @@
 #include <Scene/EmitterNode.h>
 
 #include <Utils/PropertyTree.h>
+#include <Utils/PropertyTreeNode.h>
 
 namespace OpenEngine {
 namespace ParticleSystem {
@@ -93,49 +94,50 @@ protected:
     LinearValueModifier<TYPE,float> sizemod;
     LifespanModifier<TYPE> lifemod;
     RandomGenerator randomgen;
-    PropertyTree* ptree;
+    PropertyTree* tree;
 
     inline void LoadPropertyTree() {
-        if (ptree == NULL) return;
+        if (tree == NULL) return;
         
+        PropertyTreeNode* ptree = tree->GetRootNode();
         if (ptree->HaveNode("init")) {
-            PropertyTreeNode init = ptree->GetNode("init");
+            PropertyTreeNode& init = *ptree->GetNode("init");
             
             unsigned int count = init.GetPath("particles", 200);
             if (numParticles != count) SetNumParticles(count);
             
-            SetAngle(init.Get("angle", 0.0));
-            SetRadius(init.Get("radius", 0.0));
-            SetLife(init.Get("life", 1.0));
-            SetLifeVar(init.Get("lifevar", 0.0));
-            spin = init.Get("spin", 0.0);
-            spinVar = init.Get("spinvar", 0.0);
-            SetSpeed(init.Get("speed", 45.0));
-            SetSpeedVar(init.Get("speedvar", 10.0));
-            SetSize(init.Get("size", 4.0));
-            SetSizeVar(init.Get("size", 0.0));
-            SetEmitInterval(init.Get("emitrate", 0.001));
-            SetGravity(init.Get("gravity", Vector<3,float>()));
+            SetAngle(init.GetPath("angle", 0.0));
+            SetRadius(init.GetPath("radius", 0.0));
+            SetLife(init.GetPath("life", 1.0));
+            SetLifeVar(init.GetPath("lifevar", 0.0));
+            spin = init.GetPath("spin", 0.0);
+            spinVar = init.GetPath("spinvar", 0.0);
+            SetSpeed(init.GetPath("speed", 45.0));
+            SetSpeedVar(init.GetPath("speedvar", 10.0));
+            SetSize(init.GetPath("size", 4.0));
+            SetSizeVar(init.GetPath("size", 0.0));
+            SetEmitInterval(init.GetPath("emitrate", 0.001));
+            SetGravity(init.GetPath("gravity", Vector<3,float>()));
         }
 
         colormod.Clear();
         if (ptree->HaveNode("color")) {
-            PropertyTreeNode color = ptree->GetNode("color");
+            PropertyTreeNode& color = *ptree->GetNode("color");
             for (unsigned int i = 0; i < color.GetSize(); ++i) {
-                PropertyTreeNode entry = color.GetNode(i);
+                PropertyTreeNode& entry = *color.GetNodeIdx(i);
                 if (entry.HaveNode("time") && entry.HaveNode("value")) {
-                    colormod.AddValue(entry.Get("time", 0.0f), entry.Get("value", Vector<4,float>()));
+                    colormod.AddValue(entry.GetPath("time", 0.0f), entry.GetPath("value", Vector<4,float>()));
                 }
             }
         }
 
         sizemod.Clear();
         if (ptree->HaveNode("size")) {
-            PropertyTreeNode sz = ptree->GetNode("size");
+            PropertyTreeNode& sz = *ptree->GetNode("size");
             for (unsigned int i = 0; i < sz.GetSize(); ++i) {
-                PropertyTreeNode entry = sz.GetNode(i);
+                PropertyTreeNode& entry = *sz.GetNodeIdx(i);
                 if (entry.HaveNode("time") && entry.HaveNode("value")) {
-                    sizemod.AddValue(entry.Get("time", 0.0f), entry.Get("value", 0.0));
+                    sizemod.AddValue(entry.GetPath("time", 0.0f), entry.GetPath("value", 0.0));
                 }
             }
         }
@@ -146,7 +148,7 @@ public:
         : EmitterNode(this)
         , system(system) 
         , particles(system.CreateParticles<TYPE>(200))
-        , ptree(ptree)
+        , tree(ptree)
     {
         randomgen.SeedWithTime();
         ptree->Reload();
@@ -177,7 +179,7 @@ public:
         emitdt(0.0),
         emitRate(emitRate),
         active(true),
-        ptree(NULL)
+        tree(NULL)
     {
         randomgen.SeedWithTime();
     }
