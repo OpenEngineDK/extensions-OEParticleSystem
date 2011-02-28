@@ -35,10 +35,11 @@ private:
     // ParticleSystem::ParticleCollection<ParticleType>* particles;
     IRenderer* renderer;
     Vector<3,float> campos;
+    bool debugRendering;
 public:
     // ParticleRenderer(ParticleSystem::ParticleCollection<ParticleType>* particles) 
     // : particles(particles)
-    ParticleRenderer(): renderer(NULL)
+ ParticleRenderer(): renderer(NULL), debugRendering(false)
     {}
 
     virtual ~ParticleRenderer() {
@@ -50,32 +51,40 @@ public:
         arg.canvas.GetScene()->Accept(*this);
     }
 
+    void ToggleRenderState() {
+        debugRendering = !debugRendering;
+    }
+
     void VisitEmitterNode(EmitterNode* node) {
         SimpleEmitter* emitter = node->GetEmitter();
         ParticleSystem::ParticleCollection<ParticleType>* particles = emitter->GetParticles();
 
-        glDisable(GL_LIGHTING);
-        glDepthMask(GL_FALSE);
-        glEnable(GL_BLEND);
-        //glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-        // glBlendFunc(GL_ONE,GL_ONE); // additive blending
-        glBlendFunc(GL_SRC_ALPHA,GL_ONE); // additive blending
-        glEnable(GL_TEXTURE_2D);
-        glEnable(GL_COLOR_MATERIAL);
+        if (debugRendering) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        } else {
+            glDisable(GL_LIGHTING);
+            glDepthMask(GL_FALSE);
+            glEnable(GL_BLEND);
+            //glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+            // glBlendFunc(GL_ONE,GL_ONE); // additive blending
+            glBlendFunc(GL_SRC_ALPHA,GL_ONE); // additive blending
+            glEnable(GL_TEXTURE_2D);
+            glEnable(GL_COLOR_MATERIAL);
 
-        //Set texture
-        ITexture2DPtr texr = emitter->GetTexture();
-        if (texr.get() != NULL) {
-            if (texr->GetID() == 0) {
-                // maybe only load texture on intialize
-                renderer->LoadTexture(texr);
+            //Set texture
+            ITexture2DPtr texr = emitter->GetTexture();
+            if (texr.get() != NULL) {
+                if (texr->GetID() == 0) {
+                    // maybe only load texture on intialize
+                    renderer->LoadTexture(texr);
+                }
+                glBindTexture(GL_TEXTURE_2D, texr->GetID());
             }
-            glBindTexture(GL_TEXTURE_2D, texr->GetID());
+            else {
+                glBindTexture(GL_TEXTURE_2D, 0);
+            }
         }
-        else {
-            glBindTexture(GL_TEXTURE_2D, 0);
-        }
-        
+
         for (particles->iterator.Reset(); 
              particles->iterator.HasNext(); 
              particles->iterator.Next()) {
@@ -161,12 +170,17 @@ public:
             // glPopMatrix();
 
         }
-        glBindTexture(GL_TEXTURE_2D, 0);
-        glDisable(GL_TEXTURE_2D);
-        glDisable(GL_COLOR_MATERIAL);
-        glDepthMask(GL_TRUE);
-        glDisable(GL_BLEND);
-        CHECK_FOR_GL_ERROR();
+
+        if (debugRendering) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        } else {
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glDisable(GL_TEXTURE_2D);
+            glDisable(GL_COLOR_MATERIAL);
+            glDepthMask(GL_TRUE);
+            glDisable(GL_BLEND);
+            CHECK_FOR_GL_ERROR();
+        }
 
         node->VisitSubNodes(*this);
     }
