@@ -3,7 +3,7 @@
 dist /extensions/PropertyTree/PropertyTree.dist       http://www.openengine.dk/code/extensions/PropertyTree/PropertyTree.dist
 
 # standard set of extensions
-darcs /extensions/OEParticleSystem        http://openengine.dk/code/extensions/OEParticleSystem
+git /extensions/OEParticleSystem        https://github.com/OpenEngineDK/extensions-OEParticleSystem.git
 
-darcs-dev /extensions/OEParticleSystem    fh.daimi.au.dk:/users/cgd/code/extensions/OEParticleSystem
+git-dev /extensions/OEParticleSystem    git@github.com:OpenEngineDK/extensions-OEParticleSystem.git
 
