@@ -1,6 +1,6 @@
 # PropertyTree dist
 
-dist /extensions/PropertyTree/PropertyTree.dist       http://www.openengine.dk/code/extensions/PropertyTree/PropertyTree.dist
+dist /extensions/PropertyTree/PropertyTree.dist       https://raw.githubusercontent.com/OpenEngineDK/extensions-PropertyTree/master/PropertyTree.dist
 
 # standard set of extensions
 git /extensions/OEParticleSystem        https://github.com/OpenEngineDK/extensions-OEParticleSystem.git
